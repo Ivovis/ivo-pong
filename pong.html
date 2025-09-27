@@ -27,18 +27,49 @@
       let scoreLimit = 11;
 
       // All the parts to make a numerical character
+      // the comment on each includes the bit value for that part
       let wd = 20;
       let hd = 20;
       let th = 5;
       let charBuff = [
-        { x: th / 2, y: 0, w: wd, h: th }, // top bar
-        { x: th / 2, y: hd - th / 2, w: wd, h: th }, // middle bar
-        { x: th / 2, y: hd + hd - th, w: wd, h: th }, // bottom bar
-        { x: th / 2, y: 0, w: th, h: hd }, // top left
-        { x: wd - th / 2, y: 0, w: th, h: hd }, // top right
-        { x: th / 2, y: hd, w: th, h: hd }, // bot left
-        { x: wd - th / 2, y: hd, w: th, h: hd }, // bot right
+        { x: th / 2, y: 0, w: wd, h: th }, // top bar 1
+        { x: th / 2, y: hd - th / 2, w: wd, h: th }, // middle bar 2
+        { x: th / 2, y: hd + hd - th, w: wd, h: th }, // bottom bar 4
+        { x: th / 2, y: 0, w: th, h: hd }, // top left 8
+        { x: wd - th / 2, y: 0, w: th, h: hd }, // top right 16
+        { x: th / 2, y: hd, w: th, h: hd }, // bot left 32
+        { x: wd - th / 2, y: hd, w: th, h: hd }, // bot right 64
       ];
+
+      // add bit values for the parts needed for each number
+      let charTranslation = [
+        1 + 4 + 8 + 16 + 32 + 64, // 0
+        16 + 64, //1
+        1 + 16 + 2 + 32 + 4, //2
+        1 + 2 + 4 + 16 + 64, //3
+        8 + 16 + 64 + 2, //4
+        1 + 2 + 4 + 8 + 64, //5
+        1 + 2 + 4 + 8 + 32 + 64, //6
+        1 + 16 + 64, //7
+        1 + 2 + 4 + 8 + 16 + 32 + 64, //8
+        1 + 2 + 4 + 8 + 16 + 64, //9
+      ];
+
+      // x,y pixel location of top left of the digit
+      function drawScore(x, y, value) {
+        // Get the bitmask for the digit
+        let segments = charTranslation[value];
+
+        // Draw only the segments that are set in the bitmask
+        charBuff.forEach((item, index) => {
+          // Check if the bit for this segment is set
+          // Using powers of 2 (1, 2, 4, 8, 16, 32, 64) corresponding to each segment
+          if (segments & (1 << index)) {
+            // Draw rectangle with offset x, y
+            rect(item.x + x, item.y + y, item.w, item.h);
+          }
+        });
+      }
 
       function setup() {
         createCanvas(800, 600);
@@ -99,9 +130,14 @@
         text(leftScore, width / 4, 50);
         text(rightScore, (3 * width) / 4, 50);
 
-        charBuff.forEach((item) => {
-          rect(item.x, item.y, item.w, item.h);
-        });
+        console.log("leftscore", leftScore);
+        if (leftScore > 9) {
+          drawScore(0, 0, int(leftScore / 10));
+          drawScore(30, 0, int(leftScore - 10));
+        } else {
+          drawScore(0, 0, int(leftScore));
+          console.log("drawingsingle left");
+        }
       }
 
       function checkWin() {
