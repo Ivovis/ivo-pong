@@ -27,8 +27,8 @@
       let scoreLimit = 11;
 
       // All the parts to make a numerical character
-      // the comment on each includes the bit value for that part
-      let wd = 20;
+      let scoreWidth = 20;
+      let wd = scoreWidth;
       let hd = 20;
       let th = 5;
       let charBuff = [
@@ -63,7 +63,6 @@
         // Draw only the segments that are set in the bitmask
         charBuff.forEach((item, index) => {
           // Check if the bit for this segment is set
-          // Using powers of 2 (1, 2, 4, 8, 16, 32, 64) corresponding to each segment
           if (segments & (1 << index)) {
             // Draw rectangle with offset x, y
             rect(item.x + x, item.y + y, item.w, item.h);
@@ -100,6 +99,7 @@
           displayScores();
           checkWin();
         } else if (gameState === "gameOver") {
+          displayScores();
           text(
             `${
               leftScore >= scoreLimit ? "Player 1" : "Player 2"
@@ -117,26 +117,41 @@
       }
 
       function drawCourt() {
-        stroke(128);
-        line(width / 2, 0, width / 2, height);
-        stroke(255, 0, 0);
-        line(0, 0, 0, height);
-        line(width, 0, width, height);
+        strokeCap(SQUARE);
+        strokeWeight(10);
+
+        if (gameState === "playing") {
+          stroke(255);
+        } else {
+          stroke(64);
+        }
+
+        drawingContext.setLineDash([20, 20]);
+        line(width / 2, 10, width / 2, height);
+        drawingContext.setLineDash([]);
+
+        stroke(255);
         line(0, 0, width, 0);
         line(0, height, width, height);
+        strokeWeight(1);
       }
 
       function displayScores() {
-        text(leftScore, width / 4, 50);
-        text(rightScore, (3 * width) / 4, 50);
-
-        console.log("leftscore", leftScore);
+        let sp = 5;
+        let offset = width / 4;
         if (leftScore > 9) {
-          drawScore(0, 0, int(leftScore / 10));
-          drawScore(30, 0, int(leftScore - 10));
+          drawScore(offset - scoreWidth / 2 - sp, 20, int(leftScore / 10));
+          drawScore(offset + scoreWidth / 2 + sp, 20, int(leftScore - 10));
         } else {
-          drawScore(0, 0, int(leftScore));
-          console.log("drawingsingle left");
+          drawScore(offset - scoreWidth / 2, 20, int(leftScore));
+        }
+
+        offset = (3 * width) / 4;
+        if (rightScore > 9) {
+          drawScore(offset - scoreWidth / 2 - sp, 20, int(rightScore / 10));
+          drawScore(offset + scoreWidth / 2 + sp, 20, int(rightScore - 10));
+        } else {
+          drawScore(offset - scoreWidth / 2, 20, int(rightScore));
         }
       }
 
