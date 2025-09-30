@@ -55,6 +55,16 @@
         1 + 2 + 4 + 8 + 16 + 64, //9
       ];
 
+      let menuText = [
+        "Single player",
+        "Two player",
+        "Robot player",
+        "Sound Off",
+      ];
+
+      let menuSelection = 0;
+      let enableSound = true;
+
       // x,y pixel location of top left of the digit
       function drawScore(x, y, value) {
         // Get the bitmask for the digit
@@ -85,11 +95,26 @@
         drawCourt();
 
         if (gameState === "menu") {
-          text("Pong\nPress SPACE to Start", width / 2, height / 2);
-          if (keyIsPressed && key === " ") {
-            gameState = "playing";
-          }
+          menu();
         } else if (gameState === "playing") {
+          leftPaddle.update();
+          rightPaddle.update();
+          ball.update();
+          leftPaddle.show();
+          rightPaddle.show();
+          ball.show();
+          displayScores();
+          checkWin();
+        } else if (gameState === "playing1") {
+          leftPaddle.update();
+          rightPaddle.update();
+          ball.update();
+          leftPaddle.show();
+          rightPaddle.show();
+          ball.show();
+          displayScores();
+          checkWin();
+        } else if (gameState === "playing2") {
           leftPaddle.update();
           rightPaddle.update();
           ball.update();
@@ -101,17 +126,81 @@
         } else if (gameState === "gameOver") {
           displayScores();
           text(
-            `${
-              leftScore >= scoreLimit ? "Player 1" : "Player 2"
-            } Wins!\nPress SPACE to Restart`,
+            `${leftScore >= scoreLimit ? "Player 1" : "Player 2"} Wins!`,
             width / 2,
-            height / 2
+            height / 2 - 150
           );
-          if (keyIsPressed && key === " ") {
+          menu();
+        }
+      }
+
+      function menu() {
+        let sp = 40;
+
+        for (let x = 0; x < menuText.length; x++) {
+          fill(70);
+          if (menuSelection === x) {
+            rect(
+              width / 2 - 100,
+              height / 2 - (menuText.length * sp) / 2 + sp * x - sp / 2,
+              200,
+              sp
+            );
+          }
+          fill(255);
+          text(
+            menuText[x],
+            width / 2,
+            height / 2 - (menuText.length * sp) / 2 + sp * x
+          );
+        }
+      }
+
+      function keyPressed() {
+        if (gameState === "playing") return;
+
+        if (keyCode === UP_ARROW && menuSelection > 0) {
+          menuSelection--;
+        }
+
+        if (keyCode === DOWN_ARROW && menuSelection < menuText.length - 1) {
+          menuSelection++;
+        }
+
+        if (keyCode === ENTER || key === " ") {
+          if (menuSelection === 0) {
+            leftScore = 0;
+            rightScore = 0;
+            ball.reset();
+            gameState = "playing1";
+            return;
+          }
+
+          if (menuSelection === 1) {
             leftScore = 0;
             rightScore = 0;
             ball.reset();
             gameState = "playing";
+            return;
+          }
+
+          if (menuSelection === 2) {
+            leftScore = 0;
+            rightScore = 0;
+            ball.reset();
+            gameState = "playing2";
+            return;
+          }
+
+          if (menuSelection === 3) {
+            if (enableSound) {
+              menuText[3] = "Sound Off";
+              enableSound = false;
+            } else {
+              menuText[3] = "Sound On";
+              enableSound = true;
+            }
+            return;
           }
         }
       }
