@@ -93,6 +93,7 @@
       function draw() {
         background(0);
         drawCourt();
+        displayScores();
 
         if (gameState === "menu") {
           menu();
@@ -106,10 +107,8 @@
           displayScores();
           checkWin();
         } else if (gameState === "playing1") {
-          //leftPaddle.update();
           rightPaddle.update();
           ball.update();
-          //leftPaddle.show();
           rightPaddle.show();
           ball.show();
           displayScores();
@@ -221,10 +220,11 @@
 
         stroke(255);
         line(0, 0, width, 0);
-        line(0, 0, 0, height);
+
+        line(0, height, width, height);
 
         if (gameState === "playing1") {
-          line(0, height, width, height);
+          line(0, 0, 0, height);
         }
 
         strokeWeight(1);
@@ -312,17 +312,15 @@
           }
 
           // Paddle collision
-          if (gameState != "playing1") {
-            if (
-              this.x - this.r <= leftPaddle.x + leftPaddle.w &&
-              this.y >= leftPaddle.y &&
-              this.y <= leftPaddle.y + leftPaddle.h
-            ) {
-              let hitPos = (this.y - leftPaddle.y) / leftPaddle.h;
-              this.angle = map(hitPos, 0, 1, -PI / 3, PI / 3);
-              this.vx = this.speed * cos(this.angle);
-              this.vy = this.speed * sin(this.angle);
-            }
+          if (
+            this.x - this.r <= leftPaddle.x + leftPaddle.w &&
+            this.y >= leftPaddle.y &&
+            this.y <= leftPaddle.y + leftPaddle.h
+          ) {
+            let hitPos = (this.y - leftPaddle.y) / leftPaddle.h;
+            this.angle = map(hitPos, 0, 1, -PI / 3, PI / 3);
+            this.vx = this.speed * cos(this.angle);
+            this.vy = this.speed * sin(this.angle);
           }
 
           if (
