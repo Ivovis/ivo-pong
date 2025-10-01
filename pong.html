@@ -106,10 +106,10 @@
           displayScores();
           checkWin();
         } else if (gameState === "playing1") {
-          leftPaddle.update();
+          //leftPaddle.update();
           rightPaddle.update();
           ball.update();
-          leftPaddle.show();
+          //leftPaddle.show();
           rightPaddle.show();
           ball.show();
           displayScores();
@@ -221,7 +221,12 @@
 
         stroke(255);
         line(0, 0, width, 0);
-        line(0, height, width, height);
+        line(0, 0, 0, height);
+
+        if (gameState === "playing1") {
+          line(0, height, width, height);
+        }
+
         strokeWeight(1);
       }
 
@@ -300,17 +305,26 @@
             this.vy *= -1;
           }
 
-          // Paddle collision
-          if (
-            this.x - this.r <= leftPaddle.x + leftPaddle.w &&
-            this.y >= leftPaddle.y &&
-            this.y <= leftPaddle.y + leftPaddle.h
-          ) {
-            let hitPos = (this.y - leftPaddle.y) / leftPaddle.h;
-            this.angle = map(hitPos, 0, 1, -PI / 3, PI / 3);
-            this.vx = this.speed * cos(this.angle);
-            this.vy = this.speed * sin(this.angle);
+          if (gameState === "playing1") {
+            if (this.x <= this.r) {
+              this.vx *= -1;
+            }
           }
+
+          // Paddle collision
+          if (gameState != "playing1") {
+            if (
+              this.x - this.r <= leftPaddle.x + leftPaddle.w &&
+              this.y >= leftPaddle.y &&
+              this.y <= leftPaddle.y + leftPaddle.h
+            ) {
+              let hitPos = (this.y - leftPaddle.y) / leftPaddle.h;
+              this.angle = map(hitPos, 0, 1, -PI / 3, PI / 3);
+              this.vx = this.speed * cos(this.angle);
+              this.vy = this.speed * sin(this.angle);
+            }
+          }
+
           if (
             this.x + this.r >= rightPaddle.x &&
             this.y >= rightPaddle.y &&
@@ -333,7 +347,6 @@
         }
 
         show() {
-          // ellipse(this.x, this.y, this.r * 2);
           rect(this.x - this.r, this.y - this.r, this.r, this.r);
         }
       }
