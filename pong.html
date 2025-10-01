@@ -12,11 +12,16 @@
         align-items: center;
         height: 100vh;
         background: #000;
+        font-family: Orbitron;
       }
       canvas {
         display: block;
       }
     </style>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <script>
@@ -81,6 +86,7 @@
       }
 
       function setup() {
+        textFont("Orbitron");
         createCanvas(800, 600);
         ball = new Ball();
         leftPaddle = new Paddle(20, height / 2 - 50, true);
@@ -140,9 +146,9 @@
           fill(70);
           if (menuSelection === x) {
             rect(
-              width / 2 - 100,
+              width / 2 - 150,
               height / 2 - (menuText.length * sp) / 2 + sp * x - sp / 2,
-              200,
+              300,
               sp
             );
           }
