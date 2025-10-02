@@ -63,7 +63,7 @@
       let menuText = [
         "Single player",
         "Two player",
-        "Robot player",
+        "Clanker battle",
         "Sound Off",
       ];
 
@@ -104,6 +104,7 @@
         if (gameState === "menu") {
           menu();
         } else if (gameState === "playing") {
+          // two player
           leftPaddle.update();
           rightPaddle.update();
           ball.update();
@@ -113,6 +114,7 @@
           displayScores();
           checkWin();
         } else if (gameState === "playing1") {
+          // one player
           rightPaddle.update();
           ball.update();
           rightPaddle.show();
@@ -120,6 +122,7 @@
           displayScores();
           checkWin();
         } else if (gameState === "playing2") {
+          // robot/clanker
           leftPaddle.update();
           rightPaddle.update();
           ball.update();
