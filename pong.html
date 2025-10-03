@@ -33,9 +33,11 @@
 
       // All the parts to make a numerical character
       let scoreWidth = 20;
-      let wd = scoreWidth;
-      let hd = 20;
-      let th = 5;
+      let scoreHeight = 40;
+      let wd = scoreWidth; // width of character in pixels
+      let scoreSpace = 5; // number of pixels between characters
+      let hd = scoreHeight / 2; // segment height in pixels
+      let th = 5; // segment thickness in pixels
       let charBuff = [
         { x: th / 2, y: 0, w: wd, h: th }, // top bar 1
         { x: th / 2, y: hd - th / 2, w: wd, h: th }, // middle bar 2
@@ -70,19 +72,33 @@
       let menuSelection = 0;
       let enableSound = true;
 
-      // x,y pixel location of top left of the digit
+      // x,y pixel location of center
       function drawScore(x, y, value) {
-        // Get the bitmask for the digit
-        let segments = charTranslation[value];
+        // get width of value in characters
+        let valueStr = value.toString();
+        let valueWidth = valueStr.length;
+        console.log(`width:${valueWidth}`);
 
-        // Draw only the segments that are set in the bitmask
-        charBuff.forEach((item, index) => {
-          // Check if the bit for this segment is set
-          if (segments & (1 << index)) {
-            // Draw rectangle with offset x, y
-            rect(item.x + x, item.y + y, item.w, item.h);
-          }
-        });
+        // set the starting position
+        let xp = x - valueWidth * scoreWidth;
+        let yp = y - scoreHeight / 2;
+
+        // loop each char in value
+        for (let vchar of valueStr) {
+          console.log(`vchar ${vchar}`);
+          // Get the bitmask for the digit
+          let segments = charTranslation[int(vchar)];
+
+          // Draw only the segments that are set in the bitmask
+          charBuff.forEach((item, index) => {
+            // Check if the bit for this segment is set
+            if (segments & (1 << index)) {
+              // Draw rectangle with offset x, y
+              rect(item.x + xp, item.y + yp, item.w, item.h);
+            }
+          });
+          xp += scoreWidth + scoreSpace;
+        }
       }
 
       function setup() {
@@ -242,20 +258,10 @@
       function displayScores() {
         let sp = 5;
         let offset = width / 4;
-        if (leftScore > 9) {
-          drawScore(offset - scoreWidth / 2 - sp, 20, int(leftScore / 10));
-          drawScore(offset + scoreWidth / 2 + sp, 20, int(leftScore - 10));
-        } else {
-          drawScore(offset - scoreWidth / 2, 20, int(leftScore));
-        }
+        drawScore(offset, 40, int(leftScore));
 
         offset = (3 * width) / 4;
-        if (rightScore > 9) {
-          drawScore(offset - scoreWidth / 2 - sp, 20, int(rightScore / 10));
-          drawScore(offset + scoreWidth / 2 + sp, 20, int(rightScore - 10));
-        } else {
-          drawScore(offset - scoreWidth / 2, 20, int(rightScore));
-        }
+        drawScore(offset, 40, int(rightScore));
       }
 
       function checkWin() {
