@@ -78,7 +78,6 @@
         // get width of value in characters
         let valueStr = value.toString();
         let valueWidth = valueStr.length;
-        console.log(`width:${valueWidth}`);
 
         // set the starting position
         let xp = x - valueWidth * scoreWidth;
@@ -86,7 +85,6 @@
 
         // loop each char in value
         for (let vchar of valueStr) {
-          console.log(`vchar ${vchar}`);
           // Get the bitmask for the digit
           let segments = charTranslation[int(vchar)];
 
@@ -325,6 +323,7 @@
         }
 
         reset() {
+          this.bounce = 0;
           this.x = width / 2;
           this.y = height / 2;
           this.r = 10;
@@ -358,6 +357,7 @@
             this.y >= leftPaddle.y &&
             this.y <= leftPaddle.y + leftPaddle.h
           ) {
+            this.bounce++;
             let hitPos = (this.y - leftPaddle.y) / leftPaddle.h;
             this.angle = map(hitPos, 0, 1, -PI / 3, PI / 3);
             this.vx = this.speed * cos(this.angle);
@@ -370,9 +370,11 @@
             this.y >= rightPaddle.y &&
             this.y <= rightPaddle.y + rightPaddle.h
           ) {
+            // when single player a hit = + score
             if (gameState === "playing1") {
               rightScore++;
             }
+            this.bounce++;
             let hitPos = (this.y - rightPaddle.y) / rightPaddle.h;
             this.angle = map(hitPos, 0, 1, PI - PI / 3, PI + PI / 3);
             this.vx = this.speed * cos(this.angle);
@@ -386,6 +388,12 @@
           } else if (this.x > width) {
             leftScore++;
             this.reset();
+          }
+
+          // progressive speed
+          if (this.bounce > 5) {
+            this.speed += 5;
+            this.bounce == 0;
           }
         }
 
