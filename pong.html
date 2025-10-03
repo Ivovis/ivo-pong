@@ -71,6 +71,7 @@
 
       let menuSelection = 0;
       let enableSound = true;
+      let enableLeftScore = true;
 
       // x,y pixel location of center
       function drawScore(x, y, value) {
@@ -149,11 +150,16 @@
           checkWin();
         } else if (gameState === "gameOver") {
           displayScores();
-          text(
-            `${leftScore >= scoreLimit ? "Player 1" : "Player 2"} Wins!`,
-            width / 2,
-            height / 2 - 150
-          );
+          if (enableLeftScore) {
+            text(
+              `${leftScore >= scoreLimit ? "Player 1" : "Player 2"} Wins!`,
+              width / 2,
+              height / 2 - 150
+            );
+          } else {
+            text(`Game Over`, width / 2, height / 2 - 150);
+          }
+
           menu();
         }
       }
@@ -181,7 +187,12 @@
       }
 
       function keyPressed() {
-        if (gameState === "playing") return;
+        if (
+          gameState === "playing" ||
+          gameState === "playing1" ||
+          gameState === "playing2"
+        )
+          return;
 
         if (keyCode === UP_ARROW && menuSelection > 0) {
           menuSelection--;
@@ -193,6 +204,7 @@
 
         if (keyCode === ENTER || key === " ") {
           if (menuSelection === 0) {
+            enableLeftScore = false;
             leftScore = 0;
             rightScore = 0;
             ball.reset();
@@ -201,6 +213,7 @@
           }
 
           if (menuSelection === 1) {
+            enableLeftScore = true;
             leftScore = 0;
             rightScore = 0;
             ball.reset();
@@ -209,6 +222,7 @@
           }
 
           if (menuSelection === 2) {
+            enableLeftScore = true;
             leftScore = 0;
             rightScore = 0;
             ball.reset();
@@ -257,15 +271,24 @@
 
       function displayScores() {
         let sp = 5;
-        let offset = width / 4;
-        drawScore(offset, 40, int(leftScore));
+        if (enableLeftScore) {
+          let offset = width / 4;
+          drawScore(offset, 40, int(leftScore));
+        }
 
         offset = (3 * width) / 4;
         drawScore(offset, 40, int(rightScore));
       }
 
       function checkWin() {
-        if (leftScore >= scoreLimit || rightScore >= scoreLimit) {
+        if (
+          (leftScore >= scoreLimit || rightScore >= scoreLimit) &&
+          enableLeftScore
+        ) {
+          gameState = "gameOver";
+        }
+
+        if (leftScore >= 1 && !enableLeftScore) {
           gameState = "gameOver";
         }
       }
@@ -320,6 +343,7 @@
             this.vy *= -1;
           }
 
+          // single player wall bounce
           if (gameState === "playing1") {
             if (this.x <= this.r) {
               this.vx *= -1;
@@ -327,7 +351,9 @@
           }
 
           // Paddle collision
+          // left
           if (
+            enableLeftScore == true &&
             this.x - this.r <= leftPaddle.x + leftPaddle.w &&
             this.y >= leftPaddle.y &&
             this.y <= leftPaddle.y + leftPaddle.h
@@ -338,11 +364,15 @@
             this.vy = this.speed * sin(this.angle);
           }
 
+          // right
           if (
             this.x + this.r >= rightPaddle.x &&
             this.y >= rightPaddle.y &&
             this.y <= rightPaddle.y + rightPaddle.h
           ) {
+            if (gameState === "playing1") {
+              rightScore++;
+            }
             let hitPos = (this.y - rightPaddle.y) / rightPaddle.h;
             this.angle = map(hitPos, 0, 1, PI - PI / 3, PI + PI / 3);
             this.vx = this.speed * cos(this.angle);
